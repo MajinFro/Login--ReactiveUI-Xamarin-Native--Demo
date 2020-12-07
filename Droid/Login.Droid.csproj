@@ -178,6 +178,30 @@
     <Reference Include="Xamarin.Android.Support.Constraint.Layout">
       <HintPath>..\packages\Xamarin.Android.Support.Constraint.Layout.2.0.1\lib\monoandroid90\Xamarin.Android.Support.Constraint.Layout.dll</HintPath>
     </Reference>
+    <Reference Include="xamarin-iconify-common">
+      <HintPath>..\packages\xamarin-iconify-common.1.0.0.0\lib\portable-net45+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\xamarin-iconify-common.dll</HintPath>
+    </Reference>
+    <Reference Include="xamarin-iconify">
+      <HintPath>..\packages\xamarin-iconify.1.0.0\lib\MonoAndroid403\xamarin-iconify.dll</HintPath>
+    </Reference>
+    <Reference Include="xamarin-iconify-fontawesome">
+      <HintPath>..\packages\xamarin-iconify-fontawesome.1.0.0.0\lib\portable-net45+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\xamarin-iconify-fontawesome.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.Validation">
+      <HintPath>..\packages\ReactiveUI.Validation.1.8.6\lib\monoandroid90\ReactiveUI.Validation.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.v7.CardView">
+      <HintPath>..\packages\Xamarin.Android.Support.v7.CardView.28.0.0.3\lib\monoandroid90\Xamarin.Android.Support.v7.CardView.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Transition">
+      <HintPath>..\packages\Xamarin.Android.Support.Transition.28.0.0.3\lib\monoandroid90\Xamarin.Android.Support.Transition.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Android.Support.Design">
+      <HintPath>..\packages\Xamarin.Android.Support.Design.28.0.0.3\lib\monoandroid90\Xamarin.Android.Support.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.Validation.AndroidSupport">
+      <HintPath>..\packages\ReactiveUI.Validation.AndroidSupport.1.8.6\lib\monoandroid90\ReactiveUI.Validation.AndroidSupport.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -265,4 +289,7 @@
   <Import Project="..\packages\Xamarin.Android.Support.v7.AppCompat.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.AppCompat.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.AppCompat.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.AppCompat.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.v7.RecyclerView.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.RecyclerView.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.RecyclerView.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.RecyclerView.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.v7.Preference.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.Preference.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.Preference.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.Preference.targets')" />
+  <Import Project="..\packages\Xamarin.Android.Support.v7.CardView.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.CardView.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.CardView.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.CardView.targets')" />
+  <Import Project="..\packages\Xamarin.Android.Support.Transition.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Transition.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Transition.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Transition.targets')" />
+  <Import Project="..\packages\Xamarin.Android.Support.Design.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Design.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Design.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Design.targets')" />
 </Project>

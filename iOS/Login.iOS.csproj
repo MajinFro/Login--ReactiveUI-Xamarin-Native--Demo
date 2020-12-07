@@ -102,6 +102,9 @@
     <Reference Include="ReactiveUI.Events">
       <HintPath>..\packages\ReactiveUI.Events.12.1.5\lib\xamarinios10\ReactiveUI.Events.dll</HintPath>
     </Reference>
+    <Reference Include="ReactiveUI.Validation">
+      <HintPath>..\packages\ReactiveUI.Validation.1.8.6\lib\xamarinios10\ReactiveUI.Validation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />

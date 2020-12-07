@@ -13,7 +13,7 @@ namespace Login.Droid
         {
             base.OnCreate(savedInstanceState);
             Thread.Sleep(2000);
-            StartActivity(typeof(SignUpActivity));
+            StartActivity(typeof(LandingActivity));
         }
     }
 }

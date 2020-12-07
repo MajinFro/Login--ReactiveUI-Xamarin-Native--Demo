@@ -13,13 +13,15 @@ using Android.Widget;
 
 namespace Login.Droid.Activities
 {
-    [Activity(Label = "LandingActivity")]
+    [Activity(Label = "LandingActivity", Theme = "@style/Theme.NoActionBar")]
     public class LandingActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            JoanZapata.XamarinIconify.Iconify.with(new JoanZapata.XamarinIconify.Fonts.FontAwesomeModule());
+            SetContentView(Resource.Layout.Landing);
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
