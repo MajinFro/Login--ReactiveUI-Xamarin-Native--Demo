@@ -10,7 +10,7 @@ namespace Login.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string Phone { get; set; }
-        public DateTime ServiceStartDate { get; set; }
+        public string ServiceStartDate { get; set; }
         public string ToJson()
         {
             try

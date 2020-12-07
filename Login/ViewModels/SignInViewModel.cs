@@ -1,29 +1,36 @@
-﻿using System;
+﻿using System.Reactive;
+using Login.Models;
+using Login.Services;
 using ReactiveUI;
+using Splat;
+using ReactiveUI.Fody.Helpers;
 
 namespace Login.ViewModels
 {
     public class SignInViewModel : BaseViewModel
     {
-        private string _username;
-        public string Username
+        private readonly IAccountService _accountService;
+
+        [Reactive]
+        public string Username { get; set; }
+
+        [Reactive]
+        public string Password { get; set; }
+
+        [Reactive]
+        public bool SignInEnabled { get; set; }
+
+        public ReactiveCommand<Unit, AccountStatus> SignInCommand { get; }
+
+        public SignInViewModel(IAccountService accountService = null)
         {
-            get { return _username; }
-            set { this.RaiseAndSetIfChanged(ref _username, value); }
+            _accountService = accountService ?? Locator.Current.GetService<IAccountService>();
+            //SignInCommand = ReactiveCommand.Create(SignIn);
         }
 
-        private string _password;
-        public string Password
-        {
-            get { return _password; }
-            set { this.RaiseAndSetIfChanged(ref _password, value); }
-        }
+        //private AccountStatus SignIn()
+        //{
 
-        private bool _signInEnabled;
-        public bool SignInEnabled
-        {
-            get { return _signInEnabled; }
-            set { this.RaiseAndSetIfChanged(ref _signInEnabled, value); }
-        }
+        //}
     }
 }

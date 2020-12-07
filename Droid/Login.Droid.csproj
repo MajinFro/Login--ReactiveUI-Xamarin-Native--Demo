@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\ReactiveUI.Fody.12.1.5\build\ReactiveUI.Fody.props" Condition="Exists('..\packages\ReactiveUI.Fody.12.1.5\build\ReactiveUI.Fody.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -202,6 +203,12 @@
     <Reference Include="ReactiveUI.Validation.AndroidSupport">
       <HintPath>..\packages\ReactiveUI.Validation.AndroidSupport.1.8.6\lib\monoandroid90\ReactiveUI.Validation.AndroidSupport.dll</HintPath>
     </Reference>
+    <Reference Include="ReactiveUI.Fody.Helpers">
+      <HintPath>..\packages\ReactiveUI.Fody.12.1.5\lib\monoandroid90\ReactiveUI.Fody.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -253,6 +260,12 @@
     <Folder Include="Acitivities\" />
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Login\Login.csproj">
+      <Project>{0C87C8C9-8A43-48A9-81B4-0BA780A6B94E}</Project>
+      <Name>Login</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Android.Support.Annotations.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Annotations.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Annotations.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Annotations.targets')" />
   <Import Project="..\packages\Xamarin.Android.Arch.Core.Common.1.1.1.3\build\monoandroid90\Xamarin.Android.Arch.Core.Common.targets" Condition="Exists('..\packages\Xamarin.Android.Arch.Core.Common.1.1.1.3\build\monoandroid90\Xamarin.Android.Arch.Core.Common.targets')" />
@@ -292,4 +305,5 @@
   <Import Project="..\packages\Xamarin.Android.Support.v7.CardView.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.CardView.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.CardView.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.v7.CardView.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.Transition.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Transition.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Transition.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Transition.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.Design.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Design.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Design.28.0.0.3\build\monoandroid90\Xamarin.Android.Support.Design.targets')" />
+  <Import Project="..\packages\Fody.6.3.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.3.0\build\Fody.targets')" />
 </Project>
