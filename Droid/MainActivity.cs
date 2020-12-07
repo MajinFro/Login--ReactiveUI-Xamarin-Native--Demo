@@ -3,6 +3,8 @@ using Android.OS;
 using Android.Content;
 using Login.Droid.Activities;
 using System.Threading;
+using Splat;
+using Login.Services;
 
 namespace Login.Droid
 {
@@ -12,8 +14,9 @@ namespace Login.Droid
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            Locator.CurrentMutable.Register(() => new AccountService(), typeof(IAccountService));
             Thread.Sleep(2000);
-            StartActivity(typeof(SignUpActivity));
+            StartActivity(typeof(SignInActivity));
         }
     }
 }

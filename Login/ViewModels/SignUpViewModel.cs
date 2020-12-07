@@ -1,48 +1,69 @@
 ﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using Login.Models;
+using Login.Services;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
+using Splat;
 
 namespace Login.ViewModels
 {
     public class SignUpViewModel : BaseViewModel
     {
-        [Reactive]
-        public string FirstName { get; set; }
+        private readonly IAccountService accountService;
+        private readonly IUserDialogs userDialogs;
 
         [Reactive]
-        public string LastName { get; set; }
+        public string FirstName { get; set; } = "";
 
         [Reactive]
-        public string Username { get; set; }
+        public string LastName { get; set; } = "";
 
         [Reactive]
-        public string Password { get; set; }
+        public string Username { get; set; } = "";
 
         [Reactive]
-        public string Phone { get; set; }
+        public string Password { get; set; } = "";
 
         [Reactive]
-        public string ServiceStartDate { get; set; }
+        public string Phone { get; set; } = "";
 
-        public SignUpViewModel()
+        [Reactive]
+        public string ServiceStartDate { get; set; } = "";
+
+        public ReactiveCommand<Unit, Unit> SignUp { get; }
+       
+
+        public SignUpViewModel(IAccountService accountservice = null, IUserDialogs userDialogs = null)
         {
-            SetupValidation();
+            this.accountService = accountService ?? Locator.Current.GetService<IAccountService>();
+            this.userDialogs = userDialogs ?? Locator.Current.GetService<IUserDialogs>();
+            SignUp = ReactiveCommand.Create(SignUpImpl, this.IsValid());
+            SetupValidation();                   
+
         }
 
         private Account GetAccountModel()
         {
             return new Account()
             {
-                FirstName = this.FirstName,
-                LastName = this.LastName,
-                Username = this.Username,
-                Password = this.Password,
-                Phone = this.Phone,
-                ServiceStartDate = this.ServiceStartDate
+                FirstName = FirstName,
+                LastName = LastName,
+                Username = Username,
+                Password = Password,
+                Phone = Phone,
+                ServiceStartDate = ServiceStartDate
 
             };
+        }
+
+        private void SignUpImpl()
+        {
+            AccountStatus status = this.accountService.SignUp(GetAccountModel());
+            userDialogs.ShowDialog(status);
         }
 
         private void SetupValidation()
@@ -59,9 +80,9 @@ namespace Login.ViewModels
         private void SetupUsernameValidation()
         {
             this.ValidationRule(
-               vm => vm.Username,
-               name => !string.IsNullOrWhiteSpace(name),
-               "Username is required.");
+                vm => vm.Username,
+                name => !string.IsNullOrWhiteSpace(name),
+                "Username is required.");
         }
 
         private void SetupPasswordValidation()
@@ -71,19 +92,21 @@ namespace Login.ViewModels
                 password => !string.IsNullOrWhiteSpace(password),
                 "Password is required.");
 
-            this.ValidationRule(
-                vm => vm.Password,
-                password => password?.Length >= 8 && password?.Length <= 15,
-                password => $"Password must be between 8 and 15 characters, current length: {password.Length}");
+            IObservable<bool> passwordLengthObservable = this.WhenAnyValue(x => x.Password, (password) => password?.Length >= 8 && password?.Length <= 15);
 
             this.ValidationRule(
                 vm => vm.Password,
-                password => Regex.IsMatch(password, @"^[A-Z]+$"),
+                passwordLengthObservable,
+                "Password must be between 8 and 15 characters.");
+
+            this.ValidationRule(
+                vm => vm.Password,
+                password => Regex.IsMatch(password, @"[A-Z]+"),
                 password => $"Password must contain a capital letter.");
 
             this.ValidationRule(
                 vm => vm.Password,
-                password => Regex.IsMatch(password, @"^[a-z]+$"),
+                password => Regex.IsMatch(password, @"[a-z]+"),
                 password => $"Password must contain a lower case letter.");
 
             this.ValidationRule(
@@ -143,14 +166,17 @@ namespace Login.ViewModels
                date => Regex.IsMatch(date, @"^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$"),
                "Service Start Date must be in the format of MM/DD/YYYY.");
 
+            IObservable<bool> dateInThePastObservable = this.WhenAnyValue(x => x.ServiceStartDate, (date) => Regex.IsMatch(date, @"^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$") && DateTime.Parse(date).Date >= DateTime.Now.Date);
+            IObservable<bool> dateIsMoreThan30DaysInTheFutureObservable = this.WhenAnyValue(x => x.ServiceStartDate, (date) => Regex.IsMatch(date, @"^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$") && DateTime.Parse(date).Date <= DateTime.Now.AddDays(30).Date);
+
             this.ValidationRule(
                vm => vm.ServiceStartDate,
-               date => DateTime.Parse(date).Date >= DateTime.Now.Date,
+               dateInThePastObservable,
                "Service Start Date must not be in the past");
 
             this.ValidationRule(
                vm => vm.ServiceStartDate,
-               date => DateTime.Parse(date).Date <= DateTime.Now.AddDays(30).Date,
+               dateIsMoreThan30DaysInTheFutureObservable,
                "It is too early to create an account");
         }
     }

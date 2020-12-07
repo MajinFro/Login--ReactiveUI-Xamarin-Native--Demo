@@ -34,7 +34,6 @@ namespace Login.Services
             if(string.IsNullOrEmpty(json)) { return new AccountStatus(Status.error, "Error Serializing The Account"); }
 
             Preferences.Set(account.Username, json);
-
             return new AccountStatus(Status.success, "");
         }
     }

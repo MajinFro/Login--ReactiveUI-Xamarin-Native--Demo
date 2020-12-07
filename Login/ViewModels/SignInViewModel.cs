@@ -4,33 +4,48 @@ using Login.Services;
 using ReactiveUI;
 using Splat;
 using ReactiveUI.Fody.Helpers;
+using ReactiveUI.Validation.Extensions;
 
 namespace Login.ViewModels
 {
     public class SignInViewModel : BaseViewModel
     {
-        private readonly IAccountService _accountService;
+        private readonly IAccountService accountService;
+        private readonly IUserDialogs userDialogs;
 
         [Reactive]
-        public string Username { get; set; }
+        public string Username { get; set; } = "";
 
         [Reactive]
-        public string Password { get; set; }
+        public string Password { get; set; } = "";
 
-        [Reactive]
-        public bool SignInEnabled { get; set; }
+        public ReactiveCommand<Unit, Unit> SignIn { get; }
 
-        public ReactiveCommand<Unit, AccountStatus> SignInCommand { get; }
-
-        public SignInViewModel(IAccountService accountService = null)
+        public SignInViewModel(IAccountService accountService = null, IUserDialogs userDialogs = null)
         {
-            _accountService = accountService ?? Locator.Current.GetService<IAccountService>();
-            //SignInCommand = ReactiveCommand.Create(SignIn);
+            this.accountService = accountService ?? Locator.Current.GetService<IAccountService>();
+            this.userDialogs = userDialogs ?? Locator.Current.GetService<IUserDialogs>();
+            SignIn = ReactiveCommand.Create(SignInImpl, this.IsValid());
+            SetupValidation();
         }
 
-        //private AccountStatus SignIn()
-        //{
+        private void SignInImpl()
+        {
+            AccountStatus status = this.accountService.SignIn(Username, Password);
+            userDialogs.ShowDialog(status);
+        }
 
-        //}
+        private void SetupValidation()
+        {
+            this.ValidationRule(
+                vm => vm.Username,
+                name => !string.IsNullOrWhiteSpace(name),
+                "Username is required.");
+
+            this.ValidationRule(
+                vm => vm.Password,
+                password => !string.IsNullOrWhiteSpace(password),
+                "Password is required.");
+        }
     }
 }
