@@ -37,7 +37,20 @@ namespace Login.ViewModels
         public ValidatableObject<string> ServiceStartDate { get; set; } = new ValidatableObject<string>();
 
         public ReactiveCommand<Unit, Unit> SignUp { get; }
-       
+
+        public bool IsValid
+        {
+            get
+            {
+                return Username.IsValid &&
+                       Password.IsValid &&
+                       FirstName.IsValid &&
+                       LastName.IsValid &&
+                       Phone.IsValid &&
+                       ServiceStartDate.IsValid;
+            }
+        }
+
 
         public SignUpViewModel(IAccountService accountservice = null, IUserDialogs userDialogs = null)
         {
@@ -83,21 +96,11 @@ namespace Login.ViewModels
         private void SignUpImpl()
         {
             AccountStatus status =
-                Validate() ?
+                IsValid ?
                 this.accountService.SignUp(GetAccountModel()) :
                 new AccountStatus(Status.validationError, "Validation Error");
              
             userDialogs.ShowDialog(status);
-        }
-
-        private bool Validate()
-        {
-            return Username.Validate() &&
-                   Password.Validate() &&
-                   FirstName.Validate() &&
-                   LastName.Validate() &&
-                   Phone.Validate() &&
-                   ServiceStartDate.Validate();
         }
 
         private void SetupValidation()

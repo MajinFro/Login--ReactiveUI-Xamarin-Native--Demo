@@ -114,15 +114,13 @@ namespace Login.Droid.Activities
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+        }   
 
         private void SetErrors(TextInputLayout layout, ValidatableObject<string> validatableObject)
         {
-            if(validatableObject.Errors.Count > 0)
-            {
-                layout.ErrorEnabled = true;
-                layout.Error = validatableObject.Errors[0];
-            }
+            bool hasErrors = validatableObject.Errors.Count > 0;
+            layout.ErrorEnabled = hasErrors;
+            layout.Error = hasErrors ? validatableObject.Errors[0] : string.Empty;
         }
     }
 }
