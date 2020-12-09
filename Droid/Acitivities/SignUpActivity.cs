@@ -118,9 +118,8 @@ namespace Login.Droid.Activities
 
         private Snackbar GetSnackbar(AccountStatus status)
         {
-            var backgroundColor = status.Status == Status.error ? "#ED4337" : "#009966";
             var snackbar = Snackbar.Make(SignUpButton, status.Message, 5000);
-            snackbar.View.SetBackgroundColor(Color.ParseColor(backgroundColor));
+            snackbar.View.SetBackgroundColor(Color.ParseColor("#ED4337"));
             snackbar.View.FindViewById<TextView>(Resource.Id.snackbar_text)?.SetTextColor(Color.White);
 
             return snackbar;
