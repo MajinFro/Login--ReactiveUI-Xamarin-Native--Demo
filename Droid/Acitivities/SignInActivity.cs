@@ -6,6 +6,7 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Constraints;
@@ -71,7 +72,8 @@ namespace Login.Droid.Activities
         public void ShowDialog(AccountStatus accountStatus)
         {
             string message = accountStatus.Status == Status.success ? "You have sucessfully signed in." : accountStatus.Message;
-            Snackbar.Make(SignInButton, message, 5000).Show();
+            string color = accountStatus.Status == Status.error ? "#ED4337" : "#009966";
+            GetSnackbar(color, message).Show();
             HideKeyboard();
         }
 
@@ -86,6 +88,15 @@ namespace Login.Droid.Activities
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        private Snackbar GetSnackbar(string bgColor, string message)
+        {
+            var snackbar = Snackbar.Make(SignInButton, message, 5000);
+            snackbar.View.SetBackgroundColor(Color.ParseColor(bgColor));
+            snackbar.View.FindViewById<TextView>(Resource.Id.snackbar_text)?.SetTextColor(Color.White);
+
+            return snackbar;
         }
     }
 }

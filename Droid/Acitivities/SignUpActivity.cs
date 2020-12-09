@@ -1,13 +1,7 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
-using Android.Content;
+using Android.Graphics;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Support.Design.Widget;
 using Android.Views;
@@ -18,7 +12,6 @@ using Login.Services;
 using Login.Validation;
 using Login.ViewModels;
 using ReactiveUI;
-using ReactiveUI.Validation.Extensions;
 using Splat;
 
 namespace Login.Droid.Activities
@@ -89,7 +82,7 @@ namespace Login.Droid.Activities
             }
             else if(accountStatus.Status == Status.error)
             {
-                Snackbar.Make(SignUpButton, accountStatus.Message, 5000).Show();
+                GetSnackbar(accountStatus).Show();
                 HideKeyboard();
             }
             else
@@ -121,6 +114,16 @@ namespace Login.Droid.Activities
             bool hasErrors = validatableObject.Errors.Count > 0;
             layout.ErrorEnabled = hasErrors;
             layout.Error = hasErrors ? validatableObject.Errors[0] : string.Empty;
+        }
+
+        private Snackbar GetSnackbar(AccountStatus status)
+        {
+            var backgroundColor = status.Status == Status.error ? "#ED4337" : "#009966";
+            var snackbar = Snackbar.Make(SignUpButton, status.Message, 5000);
+            snackbar.View.SetBackgroundColor(Color.ParseColor(backgroundColor));
+            snackbar.View.FindViewById<TextView>(Resource.Id.snackbar_text)?.SetTextColor(Color.White);
+
+            return snackbar;
         }
     }
 }
