@@ -56,14 +56,10 @@ namespace Login.Droid.Activities
 
             this.WhenActivated(disposibles =>
             {
-                this.Bind(ViewModel, x => x.Username, x => x.Username.Text);
-                this.Bind(ViewModel, x => x.Password, x => x.Password.Text);
+                this.Bind(ViewModel, x => x.Username.Value, x => x.Username.Text);
+                this.Bind(ViewModel, x => x.Password.Value, x => x.Password.Text);
 
                 this.BindCommand(ViewModel, x => x.SignIn, x => x.SignInButton);
-
-                this.BindValidation(ViewModel, x => x.Username, UsernameField);
-                this.BindValidation(ViewModel, x => x.Password, PasswordField);
-
             });
         }
 

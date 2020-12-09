@@ -4,7 +4,8 @@ using Login.Services;
 using ReactiveUI;
 using Splat;
 using ReactiveUI.Fody.Helpers;
-using ReactiveUI.Validation.Extensions;
+using Login.Validation;
+using Login.Validation.Rules;
 
 namespace Login.ViewModels
 {
@@ -14,10 +15,10 @@ namespace Login.ViewModels
         private readonly IUserDialogs userDialogs;
 
         [Reactive]
-        public string Username { get; set; } = "";
+        public ValidatableObject<string> Username { get; set; } = new ValidatableObject<string>();
 
         [Reactive]
-        public string Password { get; set; } = "";
+        public ValidatableObject<string> Password { get; set; } = new ValidatableObject<string>();
 
         public ReactiveCommand<Unit, Unit> SignIn { get; }
 
@@ -25,27 +26,29 @@ namespace Login.ViewModels
         {
             this.accountService = accountService ?? Locator.Current.GetService<IAccountService>();
             this.userDialogs = userDialogs ?? Locator.Current.GetService<IUserDialogs>();
-            SignIn = ReactiveCommand.Create(SignInImpl, this.IsValid());
             SetupValidation();
+
+            var canSignInObservable = this.WhenAnyValue(
+                vm => vm.Username.Value,
+                vm => vm.Password.Value,
+                (username, password) => {
+                    return Username.TryValidate(username) && Password.TryValidate(password);
+                }
+            );
+
+            SignIn = ReactiveCommand.Create(SignInImpl, canSignInObservable);
         }
 
         private void SignInImpl()
         {
-            AccountStatus status = this.accountService.SignIn(Username, Password);
+            AccountStatus status = this.accountService.SignIn(Username.Value, Password.Value);
             userDialogs.ShowDialog(status);
         }
 
         private void SetupValidation()
         {
-            this.ValidationRule(
-                vm => vm.Username,
-                name => !string.IsNullOrWhiteSpace(name),
-                "Username is required.");
-
-            this.ValidationRule(
-                vm => vm.Password,
-                password => !string.IsNullOrWhiteSpace(password),
-                "Password is required.");
+            Username.Validations.Add(new RequiredRule("Username is required."));
+            Password.Validations.Add(new RequiredRule("Password is required."));
         }
     }
 }
