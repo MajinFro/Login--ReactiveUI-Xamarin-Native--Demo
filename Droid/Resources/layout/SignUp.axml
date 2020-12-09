@@ -21,7 +21,7 @@
         android:layout_marginRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintBottom_toTopOf="@id/LastNameField">
         <android.support.design.widget.TextInputEditText
             android:id="@+id/FirstName"
             android:layout_width="match_parent"
@@ -40,7 +40,7 @@
         android:layout_marginRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FirstNameField">
+        app:layout_constraintBottom_toTopOf="@id/UsernameField">
         <android.support.design.widget.TextInputEditText
             android:id="@+id/LastName"
             android:layout_width="match_parent"
@@ -59,7 +59,7 @@
         android:layout_marginRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LastNameField">
+        app:layout_constraintBottom_toTopOf="@id/PasswordField">
         <android.support.design.widget.TextInputEditText
             android:id="@+id/Username"
             android:layout_width="match_parent"
@@ -76,9 +76,10 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UsernameField">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
         <android.support.design.widget.TextInputEditText
             android:id="@+id/Password"
             android:layout_width="match_parent"

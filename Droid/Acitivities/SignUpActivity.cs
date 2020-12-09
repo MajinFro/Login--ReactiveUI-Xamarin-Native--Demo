@@ -15,6 +15,7 @@ using Android.Views.InputMethods;
 using Android.Widget;
 using Login.Models;
 using Login.Services;
+using Login.Validation;
 using Login.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Validation.Extensions;
@@ -69,12 +70,12 @@ namespace Login.Droid.Activities
 
             this.WhenActivated(disposables =>
             {
-                this.Bind(ViewModel, x => x.FirstName, x => x.FirstName.Text);
-                this.Bind(ViewModel, x => x.LastName, x => x.LastName.Text);
-                this.Bind(ViewModel, x => x.Username, x => x.Username.Text);
-                this.Bind(ViewModel, x => x.Password, x => x.Password.Text);
-                this.Bind(ViewModel, x => x.Phone, x => x.PhoneNumber.Text);
-                this.Bind(ViewModel, x => x.ServiceStartDate, x => x.ServiceStartDate.Text);
+                this.Bind(ViewModel, x => x.FirstName.Value, x => x.FirstName.Text);
+                this.Bind(ViewModel, x => x.LastName.Value, x => x.LastName.Text);
+                this.Bind(ViewModel, x => x.Username.Value, x => x.Username.Text);
+                this.Bind(ViewModel, x => x.Password.Value, x => x.Password.Text);
+                this.Bind(ViewModel, x => x.Phone.Value, x => x.PhoneNumber.Text);
+                this.Bind(ViewModel, x => x.ServiceStartDate.Value, x => x.ServiceStartDate.Text);
 
                 this.BindCommand(ViewModel, x => x.SignUp, x => x.SignUpButton);
             });
@@ -86,10 +87,19 @@ namespace Login.Droid.Activities
             {
                 StartActivity(typeof(LandingActivity));
             }
-            else
+            else if(accountStatus.Status == Status.error)
             {
                 Snackbar.Make(SignUpButton, accountStatus.Message, 5000).Show();
                 HideKeyboard();
+            }
+            else
+            {
+                SetErrors(FirstNameField, ViewModel.FirstName);
+                SetErrors(LastNameField, ViewModel.LastName);
+                SetErrors(UsernameField, ViewModel.Username);
+                SetErrors(PasswordField, ViewModel.Password);
+                SetErrors(PhoneNumberField, ViewModel.Phone);
+                SetErrors(ServiceStartDateField, ViewModel.ServiceStartDate);
             }
         }
 
@@ -104,6 +114,15 @@ namespace Login.Droid.Activities
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        private void SetErrors(TextInputLayout layout, ValidatableObject<string> validatableObject)
+        {
+            if(validatableObject.Errors.Count > 0)
+            {
+                layout.ErrorEnabled = true;
+                layout.Error = validatableObject.Errors[0];
+            }
         }
     }
 }

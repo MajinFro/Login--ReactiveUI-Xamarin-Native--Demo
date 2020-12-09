@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, Click Me!</string>
     <string name="app_name">Login.Droid</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <string name="phone_number">Phone Number (###)-###-####</string>
-    <string name="service_start_date">Service Start Date MM/DD/YYYY</string>
+    <string name="phone_number">Phone Number - (###)-###-####</string>
+    <string name="service_start_date">Service Start Date - MM/DD/YYYY</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_up_button">New User? Create Account</string>
     <string name="create_account">Create Account</string>
