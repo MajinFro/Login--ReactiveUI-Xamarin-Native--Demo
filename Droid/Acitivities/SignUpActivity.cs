@@ -77,13 +77,6 @@ namespace Login.Droid.Activities
                 this.Bind(ViewModel, x => x.ServiceStartDate, x => x.ServiceStartDate.Text);
 
                 this.BindCommand(ViewModel, x => x.SignUp, x => x.SignUpButton);
-
-                this.BindValidation(ViewModel, x => x.FirstName, FirstNameField);
-                this.BindValidation(ViewModel, x => x.LastName, LastNameField);
-                this.BindValidation(ViewModel, x => x.Username, UsernameField);
-                this.BindValidation(ViewModel, x => x.Password, PasswordField);
-                this.BindValidation(ViewModel, x => x.Phone, PhoneNumberField);
-                this.BindValidation(ViewModel, x => x.ServiceStartDate, ServiceStartDateField);
             });
         }
 

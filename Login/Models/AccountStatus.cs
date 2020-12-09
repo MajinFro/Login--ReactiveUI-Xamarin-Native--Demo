@@ -5,6 +5,7 @@ namespace Login.Models
     {
         undefined,
         success,
+        validationError,
         error
     }
 

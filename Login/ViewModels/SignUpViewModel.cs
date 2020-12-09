@@ -4,6 +4,8 @@ using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using Login.Models;
 using Login.Services;
+using Login.Validation;
+using Login.Validation.Rules;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
@@ -17,22 +19,22 @@ namespace Login.ViewModels
         private readonly IUserDialogs userDialogs;
 
         [Reactive]
-        public string FirstName { get; set; } = "";
+        public ValidatableObject<string> FirstName { get; set; } = new ValidatableObject<string>();
 
         [Reactive]
-        public string LastName { get; set; } = "";
+        public ValidatableObject<string> LastName { get; set; } = new ValidatableObject<string>();
 
         [Reactive]
-        public string Username { get; set; } = "";
+        public ValidatableObject<string> Username { get; set; } = new ValidatableObject<string>();
 
         [Reactive]
-        public string Password { get; set; } = "";
+        public ValidatableObject<string> Password { get; set; } = new ValidatableObject<string>();
 
         [Reactive]
-        public string Phone { get; set; } = "";
+        public ValidatableObject<string> Phone { get; set; } = new ValidatableObject<string>();
 
         [Reactive]
-        public string ServiceStartDate { get; set; } = "";
+        public ValidatableObject<string> ServiceStartDate { get; set; } = new ValidatableObject<string>();
 
         public ReactiveCommand<Unit, Unit> SignUp { get; }
        
@@ -42,142 +44,81 @@ namespace Login.ViewModels
             this.accountService = accountService ?? Locator.Current.GetService<IAccountService>();
             this.userDialogs = userDialogs ?? Locator.Current.GetService<IUserDialogs>();
             SignUp = ReactiveCommand.Create(SignUpImpl, this.IsValid());
-            SetupValidation();                   
+            SetupValidation();
 
+            var canSignUpObservable = this.WhenAnyValue(
+                vm => vm.Username.Value,
+                vm => vm.Password.Value,
+                vm => vm.FirstName.Value,
+                vm => vm.LastName.Value,
+                vm => vm.Phone.Value,
+                vm => vm.ServiceStartDate.Value,
+                (username, password, firstname, lastname, phone, serviceStartDate) => {
+                    return !(string.IsNullOrEmpty(username) ||
+                             string.IsNullOrEmpty(password) ||
+                             string.IsNullOrEmpty(firstname) ||
+                             string.IsNullOrEmpty(lastname) ||
+                             string.IsNullOrEmpty(phone) ||
+                             string.IsNullOrEmpty(serviceStartDate));
+                }
+            );
+
+            SignUp = ReactiveCommand.Create(SignUpImpl, canSignUpObservable);
         }
 
         private Account GetAccountModel()
         {
             return new Account()
             {
-                FirstName = FirstName,
-                LastName = LastName,
-                Username = Username,
-                Password = Password,
-                Phone = Phone,
-                ServiceStartDate = ServiceStartDate
+                FirstName = FirstName.Value,
+                LastName = LastName.Value,
+                Username = Username.Value,
+                Password = Password.Value,
+                Phone = Phone.Value,
+                ServiceStartDate = ServiceStartDate.Value
 
             };
         }
 
         private void SignUpImpl()
         {
-            AccountStatus status = this.accountService.SignUp(GetAccountModel());
+            AccountStatus status =
+                Validate() ?
+                this.accountService.SignUp(GetAccountModel()) :
+                new AccountStatus(Status.validationError, "Validation Error");
+             
             userDialogs.ShowDialog(status);
+        }
+
+        private bool Validate()
+        {
+            return Username.Validate() &&
+                   Password.Validate() &&
+                   FirstName.Validate() &&
+                   LastName.Validate() &&
+                   Phone.Validate() &&
+                   ServiceStartDate.Validate();
         }
 
         private void SetupValidation()
         {
-            SetupUsernameValidation();
-            SetupPasswordValidation();
-            SetupFirstNameValidation();
-            SetupLastNameValidation();
-            SetupPhoneValidation();
-            SetupServiceStartDateValidation();
+            Username.Validations.Add(new RequiredRule("Username is required."));
+            Password.Validations.Add(new RequiredRule("Password is required."));
+            Password.Validations.Add(new LengthRule("Password must be between 8 and 15 characters.", 8, 15));
+            Password.Validations.Add(new RegexRule("Password must contain a capital letter.", @"[A-Z]+"));
+            Password.Validations.Add(new RegexRule("Password must contain a lower case letter.", @"[a-z]+"));
+            Password.Validations.Add(new RegexRule("Password cannot have a repeating sequence of characters.", @"(\w+)\1", false));
+            FirstName.Validations.Add(new RequiredRule("First Name is required."));
+            FirstName.Validations.Add(new RegexRule("First Name can not contain !@#$%^&", @"^[^!@#$%^&]+$"));
+            LastName.Validations.Add(new RequiredRule("Last Name is required."));
+            LastName.Validations.Add(new RegexRule("Last Name can not contain !@#$%^&", @"^[^!@#$%^&]+$"));
+            Phone.Validations.Add(new RequiredRule("Phone Number is required."));
+            Phone.Validations.Add(new RegexRule("Phone Number must be in the format of (###)-###-####", @"^\(\d{3}\)-\d{3}-\d{4}$"));
+            ServiceStartDate.Validations.Add(new RequiredRule("Service Start Date is required."));
+            ServiceStartDate.Validations.Add(new RegexRule("Service Start Date must be in the format of MM/DD/YYYY.", @"^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$"));
+            ServiceStartDate.Validations.Add(new OnOrAfterDateRule("Service Start Date must not be in the past", DateTime.Now));
+            ServiceStartDate.Validations.Add(new OnOrBeforeDateRule("It is too early to create an account", DateTime.Now.AddDays(30)));
 
-        }
-
-        private void SetupUsernameValidation()
-        {
-            this.ValidationRule(
-                vm => vm.Username,
-                name => !string.IsNullOrWhiteSpace(name),
-                "Username is required.");
-        }
-
-        private void SetupPasswordValidation()
-        {
-            this.ValidationRule(
-                vm => vm.Password,
-                password => !string.IsNullOrWhiteSpace(password),
-                "Password is required.");
-
-            IObservable<bool> passwordLengthObservable = this.WhenAnyValue(x => x.Password, (password) => password?.Length >= 8 && password?.Length <= 15);
-
-            this.ValidationRule(
-                vm => vm.Password,
-                passwordLengthObservable,
-                "Password must be between 8 and 15 characters.");
-
-            this.ValidationRule(
-                vm => vm.Password,
-                password => Regex.IsMatch(password, @"[A-Z]+"),
-                password => $"Password must contain a capital letter.");
-
-            this.ValidationRule(
-                vm => vm.Password,
-                password => Regex.IsMatch(password, @"[a-z]+"),
-                password => $"Password must contain a lower case letter.");
-
-            this.ValidationRule(
-                vm => vm.Password,
-                password => !Regex.IsMatch(password, @"(\w+)\1"),
-                password => $"Password cannot have a repeating sequence of characters.");
-        }
-
-        private void SetupFirstNameValidation()
-        {
-            this.ValidationRule(
-               vm => vm.FirstName,
-               name => !string.IsNullOrWhiteSpace(name),
-               "First Name is required.");
-
-            this.ValidationRule(
-                vm => vm.FirstName,
-                name => Regex.IsMatch(name, @"^[^!@#$%^&]+$"),
-                "First Name can not contain !@#$%^&");
-        }
-
-        private void SetupLastNameValidation()
-        {
-            this.ValidationRule(
-               vm => vm.LastName,
-               name => !string.IsNullOrWhiteSpace(name),
-               "Last Name is required.");
-
-            this.ValidationRule(
-                vm => vm.LastName,
-                name => Regex.IsMatch(name, @"^[^!@#$%^&]+$"),
-                "Last Name can not contain !@#$%^&");
-        }
-
-        private void SetupPhoneValidation()
-        {
-            this.ValidationRule(
-               vm => vm.Phone,
-               phone => !string.IsNullOrWhiteSpace(phone),
-               "Phone is required.");
-
-            this.ValidationRule(
-               vm => vm.Phone,
-               phone => Regex.IsMatch(phone, @"^\(\d{3}\)-\d{3}-\d{4}$"),
-               "Phone Number must be in the format of (###)-###-####");
-        }
-
-        private void SetupServiceStartDateValidation()
-        {
-            this.ValidationRule(
-               vm => vm.ServiceStartDate,
-               date => !string.IsNullOrWhiteSpace(date),
-               "Service Start Date is required.");
-
-            this.ValidationRule(
-               vm => vm.ServiceStartDate,
-               date => Regex.IsMatch(date, @"^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$"),
-               "Service Start Date must be in the format of MM/DD/YYYY.");
-
-            IObservable<bool> dateInThePastObservable = this.WhenAnyValue(x => x.ServiceStartDate, (date) => Regex.IsMatch(date, @"^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$") && DateTime.Parse(date).Date >= DateTime.Now.Date);
-            IObservable<bool> dateIsMoreThan30DaysInTheFutureObservable = this.WhenAnyValue(x => x.ServiceStartDate, (date) => Regex.IsMatch(date, @"^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$") && DateTime.Parse(date).Date <= DateTime.Now.AddDays(30).Date);
-
-            this.ValidationRule(
-               vm => vm.ServiceStartDate,
-               dateInThePastObservable,
-               "Service Start Date must not be in the past");
-
-            this.ValidationRule(
-               vm => vm.ServiceStartDate,
-               dateIsMoreThan30DaysInTheFutureObservable,
-               "It is too early to create an account");
         }
     }
 }
